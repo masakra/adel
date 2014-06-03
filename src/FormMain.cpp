@@ -42,7 +42,7 @@ FormMain::createWidgets()
 	m_editPath = new QLineEdit( this );
 
 	QToolButton * buttonBrowse = new QToolButton( this );
-	buttonBrowse->setIcon( QIcon::fromTheme("folder") );
+	buttonBrowse->setIcon( QIcon::fromTheme("folder", QIcon(":/folder.png") ) );
 	connect( buttonBrowse, SIGNAL( clicked() ), SLOT( browse() ) );
 
 	QHBoxLayout * layoutPath = new QHBoxLayout();
