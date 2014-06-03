@@ -2,7 +2,7 @@
 
 
 TARGET="adel"
-VERSION="0.1.0"
+VERSION="0.1.1"
 MODULES="xml"
 
 if [ ${OS} ]	# На Win* выдает что-то типа Windows_NT, на других платформах не определена

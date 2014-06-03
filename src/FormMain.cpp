@@ -155,8 +155,16 @@ FormMain::calcChecksum( const QString & fileName )
 
 	QByteArray array = file.readAll();
 
-	m_editMd5->setText( QCryptographicHash::hash( array.data(), QCryptographicHash::Md5 ).toHex() );
-	m_editSha1->setText( QCryptographicHash::hash( array.data(), QCryptographicHash::Sha1 ).toHex() );
+	QCryptographicHash * md5 = new QCryptographicHash( QCryptographicHash::Md5 ),
+					   * sha1 = new QCryptographicHash( QCryptographicHash::Sha1 );
+
+	md5->addData( array );
+	m_editMd5->setText( md5->result().toHex() );
+	delete md5;
+
+	sha1->addData( array );
+	m_editSha1->setText( sha1->result().toHex() );
+	delete sha1;
 
 	file.close();
 }
