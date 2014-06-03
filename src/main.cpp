@@ -34,7 +34,7 @@ main( int argc, char ** argv )
 {
 	QApplication app( argc, argv );
 
-	app.setApplicationName("skala");
+	app.setApplicationName("adel");
 	app.setApplicationVersion( VERSION );
 	app.setOrganizationName("Nordavia-RA");
 

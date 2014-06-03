@@ -32,6 +32,8 @@
 #ifndef FORMMAIN_H
 #define FORMMAIN_H
 
+#define LAST_DIR "last_dir"
+
 #include <QDialog>
 
 class QFileInfo;

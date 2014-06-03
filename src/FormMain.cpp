@@ -32,6 +32,9 @@
 FormMain::FormMain( QWidget * parent )
 	: QDialog( parent )
 {
+	setWindowTitle( QString("%1: %2 - v%3")
+			.arg( qApp->organizationName(), qApp->applicationName(), qApp->applicationVersion() ) );
+
 	createWidgets();
 	resize( 640, 100 );
 }
@@ -50,23 +53,38 @@ FormMain::createWidgets()
 	layoutPath->addWidget( buttonBrowse );
 
 	m_editTitle = new QLineEdit( this );
+	m_editTitle->setMaxLength( 24 );
+	m_editTitle->setValidator( new QRegExpValidator( QRegExp("[a-zA-Z0-9_]*") ) );
 	m_editTitle->setToolTip("The customer's title for the content. Used to distinguish it from other content "
 			"of the same type. The title must be limited to 24 alphanumeric or underscore characters.");
+
 	m_editDescription = new QLineEdit( this );
+	m_editDescription->setMaxLength( 256 );
 	m_editDescription->setToolTip("The description of the content. The descriptions must be limited to 256 "
 			"alphanumeric, space and punctuation characters.");
+
 	m_editVersion = new QLineEdit( this );
+	m_editVersion->setValidator( new QIntValidator() );
 	m_editVersion->setToolTip("The version number of the content. Different titles may have their own version "
 			"number. Should be a single positive integer that increments each time the content is updated.");
+
 	m_editTypeOfContent = new QLineEdit ( this );
 	m_editTypeOfContent->setToolTip("The JDM Pro-defined content type assigned to the content.");
+
 	m_editNomenclature = new QLineEdit( this );
+	m_editNomenclature->setMaxLength( 24 );
+	m_editNomenclature->setValidator( new QRegExpValidator( QRegExp("[a-zA-Z0-9_]*") ) );
 	m_editNomenclature->setToolTip("A label for the content for display. The label must be limited to 24 "
 			"alphanumeric or underscore characters.");
+
 	m_editName = new QLineEdit( this );
 	m_editName->setToolTip("The logicalName attribute is intentionally left empty and should not be populated.");
+
 	m_editMd5 = new QLineEdit( this );
+	m_editMd5->setReadOnly( true );
+
 	m_editSha1 = new QLineEdit( this );
+	m_editSha1->setReadOnly( true );
 
 	m_radioMd5 = new QRadioButton("MD&5", this );
 	m_radioMd5->setChecked( true );
@@ -128,7 +146,10 @@ FormMain::createWidgets()
 void
 FormMain::browse()		// slot
 {
-	const QString fileName = QFileDialog::getOpenFileName( this, "Исходный файл", QDir::homePath() );
+	QSettings settings;
+
+	const QString fileName = QFileDialog::getOpenFileName( this, "Исходный файл",
+			settings.value( LAST_DIR, QDir::homePath() ).toString() );
 
 	if ( fileName.isEmpty() )
 		return;
@@ -153,6 +174,11 @@ FormMain::calcChecksum( const QString & fileName )
 		return;
 	}
 
+	QSettings settings;
+	settings.setValue( LAST_DIR, QFileInfo( fileName ).absoluteDir().absolutePath() );
+
+	qApp->setOverrideCursor( QCursor( Qt::WaitCursor ) );
+
 	QByteArray array = file.readAll();
 
 	QCryptographicHash * md5 = new QCryptographicHash( QCryptographicHash::Md5 ),
@@ -165,6 +191,8 @@ FormMain::calcChecksum( const QString & fileName )
 	sha1->addData( array );
 	m_editSha1->setText( sha1->result().toHex() );
 	delete sha1;
+
+	qApp->restoreOverrideCursor();
 
 	file.close();
 }
